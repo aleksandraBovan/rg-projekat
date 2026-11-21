@@ -4,7 +4,7 @@ Kvadranti se postavljaju model matricama
 
 Crtaju se x, y i z ose
 
-Crta se xy-ravan (doduše ispod kvadranata pase trenutno ne vidi možda promenim posle)
+Crta se xy-ravan (doduše ispod kvadranata pa se trenutno ne vidi možda promenim posle)
 
 (COMING SOON) Pod sa teksturom
 
