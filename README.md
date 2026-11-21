@@ -6,7 +6,7 @@ Funkcija i klase za rad sa šejderima i učitavanje tekstura su u zasebnim `.hpp
 
 Šejderi transliraju jedinični kvadrat na pozicije kvadranata
 
-Shift + K + (rgb) menja boju K-tog kvadranta 
+Shift + K + (r|g|b) menja boju K-tog kvadranta 
 
 Svaki kvadrant je obojen različitom teksturom
 
