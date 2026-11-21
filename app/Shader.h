@@ -109,6 +109,11 @@ public:
     {
         glDeleteProgram(m_Id);
     }
+
+    int ID()
+    {
+        return m_Id;
+    }
 };
 
 #endif //PROJECT_SHADER_H
