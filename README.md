@@ -10,7 +10,7 @@ Funkcija i klase za rad sa šejderima i učitavanje tekstura su u zasebnim `.hpp
 
 Svaki kvadrant je obojen različitom teksturom
 
-(COMING SOON) Automatska rekompilacija šejdera
+Automatska rekompilacija šejdera
 
 ### Kako koristiti
 
