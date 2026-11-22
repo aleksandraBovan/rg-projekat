@@ -18,7 +18,7 @@ int SCR_WIDTH = 800;
 int SCR_HEIGHT = 600;
 
 
-// cuvam float za svaku rgba komponentu jer je realno mala 3-dim matrica
+// cuvam float za svaku rgba komponentu jer je realno mala (3-dim matrica)
 float quadrantColors[2][2][4] = {
     {{1.0f, 1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 0.0f}}, // y=0
     {{1.0f, 1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 0.0f}} // y=1
@@ -31,7 +31,7 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "druga-nedelja", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "treca-nedelja", NULL, NULL);
     if (!window)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -103,6 +103,7 @@ int main()
 
     while (!glfwWindowShouldClose(window))
     {
+        shader.checkForChanges();
         glfwPollEvents();
         processInput(window, textures);
         glClearColor(0.1137, 0.2000, 0.3294, 1.0);

@@ -10,6 +10,8 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <filesystem>
+#include <chrono>
 
 #include "Error.h"
 
@@ -25,10 +27,19 @@ std::string readFileContents(std::string path)
 class Shader
 {
     unsigned int m_Id;
+    std::string m_vsPath;
+    std::string m_fsPath;
+    std::filesystem::file_time_type m_vsTime;
+    std::filesystem::file_time_type m_fsTime;
 
 public:
     Shader(std::string vertexShaderPath, std::string fragmentShaderPath)
     {
+        m_vsPath = vertexShaderPath;
+        m_fsPath = fragmentShaderPath;
+        m_vsTime = std::filesystem::last_write_time(m_vsPath);
+        m_fsTime = std::filesystem::last_write_time(m_fsPath);
+
         // vertex shader
         std::string vsString = readFileContents(vertexShaderPath);
         ASSERT(!vsString.empty(), "Vertex shader source is empty");
@@ -108,6 +119,71 @@ public:
     void deleteProgram()
     {
         glDeleteProgram(m_Id);
+    }
+
+    void checkForChanges()
+    {
+        auto newVsTime = std::filesystem::last_write_time(m_vsPath);
+        auto newFsTime = std::filesystem::last_write_time(m_fsPath);
+
+        if (newVsTime == m_vsTime && newFsTime == m_fsTime)
+            return;
+
+        m_vsTime = newVsTime;
+        m_fsTime = newFsTime;
+
+        std::string vsString = readFileContents(m_vsPath);
+        std::string fsString = readFileContents(m_fsPath);
+
+        const char* vSource = vsString.c_str();
+        unsigned int vs = glCreateShader(GL_VERTEX_SHADER);
+        glShaderSource(vs, 1, &vSource, NULL);
+        glCompileShader(vs);
+
+        int success;
+        char infoLog[512];
+        glGetShaderiv(vs, GL_COMPILE_STATUS, &success);
+        if (!success) {
+            glGetShaderInfoLog(vs, 512, NULL, infoLog);
+            std::cerr << "VERTEX SHADER ERROR:\n" << infoLog << std::endl;
+            glDeleteShader(vs);
+            return; // Zadrzi stari program
+        }
+
+        const char* fSource = fsString.c_str();
+        unsigned int fs = glCreateShader(GL_FRAGMENT_SHADER);
+        glShaderSource(fs, 1, &fSource, NULL);
+        glCompileShader(fs);
+
+        glGetShaderiv(fs, GL_COMPILE_STATUS, &success);
+        if (!success) {
+            glGetShaderInfoLog(fs, 512, NULL, infoLog);
+            std::cerr << "FRAGMENT SHADER ERROR:\n" << infoLog << std::endl;
+            glDeleteShader(vs);
+            glDeleteShader(fs);
+            return;
+        }
+
+        unsigned int newProgram = glCreateProgram();
+        glAttachShader(newProgram, vs);
+        glAttachShader(newProgram, fs);
+        glLinkProgram(newProgram);
+
+        glGetProgramiv(newProgram, GL_LINK_STATUS, &success);
+        if (!success) {
+            glGetProgramInfoLog(newProgram, 512, NULL, infoLog);
+            std::cerr << "LINK ERROR:\n" << infoLog << std::endl;
+            glDeleteShader(vs);
+            glDeleteShader(fs);
+            glDeleteProgram(newProgram);
+            return;
+        }
+
+        glDeleteShader(vs);
+        glDeleteShader(fs);
+
+        glDeleteProgram(m_Id);
+        m_Id = newProgram;
     }
 };
 
