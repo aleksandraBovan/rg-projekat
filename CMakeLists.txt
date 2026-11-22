@@ -66,8 +66,7 @@ file(GLOB_RECURSE HEADERS CONFIGURE_DEPENDS
         "${CMAKE_SOURCE_DIR}/app/*.h"
         "${CMAKE_SOURCE_DIR}/app/*.hpp")
 
-add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS}
-        app/main.cpp)
+add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 
 target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/app")
 if (EXISTS "${CMAKE_SOURCE_DIR}/include")
@@ -130,4 +129,3 @@ endif ()
 # a per-configuration subfolder (Debug/, Release/).
 set_target_properties(${PROJECT_NAME} PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "$<1:${CMAKE_SOURCE_DIR}>")
-

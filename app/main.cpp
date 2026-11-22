@@ -24,9 +24,11 @@ const char* fragmentShaderSource = R"S(
 #version 330 core
 out vec4 FragColor;
 
+uniform vec4 u_Color;
+
 void main()
 {
-    FragColor = vec4(0.6902, 0.6392, 0.8314, 1.0);
+    FragColor = u_Color;
 }
 )S";
 
@@ -124,8 +126,52 @@ int main()
         3, 4, 8 // devetougao
     };
 
-    unsigned int VBO;
-    unsigned int VAO;
+    float quadVertices[] = {
+        -1.0f, 1.0f, 0.0f, // 0 levo gore
+        0.0f, 1.0f, 0.0f, // 1 centar gore
+        0.0f, 0.0f, 0.0f, // 2 centar centar
+        -1.0f, 0.0f, 0.0f, // 3 levo centar
+        1.0f, 1.0f, 0.0f, // 4 desno gore
+        1.0f, 0.0f, 0.0f, // 5 desno centar
+        -1.0f, -1.0f, 0.0f, // 6 levo dole
+        0.0f, -1.0f, 0.0f, // 7 levo centar
+        1.0f, -1.0f, 0.0f, // 8 desno dole
+
+
+    };
+
+    unsigned int quadIndices[] = {
+        0, 1, 2,
+        0, 2, 3,
+        4, 1, 2,
+        4, 5, 2,
+        3, 6, 2,
+        7, 6, 2,
+        8, 5, 2,
+        8, 7, 2,
+
+    };
+
+    unsigned int qVAO, qVBO, qEBO;
+
+    glGenVertexArrays(1, &qVAO);
+    glBindVertexArray(qVAO);
+
+    glGenBuffers(1, &qVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, qVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
+
+    glGenBuffers(1, &qEBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, qEBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(quadIndices), quadIndices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+
+    unsigned int VAO, VBO, EBO;
 
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
@@ -134,7 +180,6 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    unsigned int EBO;
     glGenBuffers(1, &EBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
@@ -145,6 +190,8 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
+    int colorLoc = glGetUniformLocation(shaderProgram, "u_Color");
+
     while (!glfwWindowShouldClose(window))
     {
         glfwPollEvents();
@@ -153,6 +200,18 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
 
         glUseProgram(shaderProgram);
+
+        glBindVertexArray(qVAO);
+        glUniform4f(colorLoc, 1.0, 0.0f, 0.5f, 1.0f);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)0);
+        glUniform4f(colorLoc, 1.0, 0.0f, 1.0f, 1.0f);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)(sizeof(float) * 6));
+        glUniform4f(colorLoc, 1.0, 0.5f, 1.0f, 1.0f);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)(sizeof(float) * 12));
+        glUniform4f(colorLoc, 1.0, 0.75f, 1.0f, 1.0f);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)(sizeof(float) * 18));
+
+        glUniform4f(colorLoc, 0.6902f, 0.6392f, 0.8314f, 1.0f);
         glBindVertexArray(VAO);
 
         if (triangleNum == 3)
@@ -183,6 +242,8 @@ int main()
         {
             glDrawElements(GL_TRIANGLES, 21, GL_UNSIGNED_INT, (void*)0);
         }
+
+
         glBindVertexArray(0);
 
         glfwSwapBuffers(window);
