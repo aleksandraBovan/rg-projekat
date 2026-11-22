@@ -2,4 +2,4 @@
 
 Ctrl + N crta n-tougao na sredini ekrana
 
-(COMING SOON) Svaki kvadrant u drugoj boji 
+Svaki kvadrant u drugoj boji 
